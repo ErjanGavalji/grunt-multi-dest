@@ -12,12 +12,21 @@
                 src: distDirs
             }
         },
+        watch: {
+            sourceFiles: {
+                files: ["<%= srcDir %>/**"],
+                tasks: ["multiOutput:initialTasks"],
+                options: {
+                    spawn: false
+                }
+            }
+        },
         copy: {
             zeFiles:{
                 expand: true,
                 src: ["**"],
                 cwd: "<%= srcDir %>/",
-                dest: distDirs,//"<%= distDirBase %>/"
+                dest: "<%= distDirBase %>" //distDirs
             }
         },
         multiOutput: {
@@ -39,6 +48,7 @@
 
     grunt.loadNpmTasks("grunt-contrib-clean");
     grunt.loadNpmTasks("grunt-contrib-copy");
+    grunt.loadNpmTasks("grunt-contrib-watch");
 
     grunt.registerMultiTask("multiOutput", "Runs the specified tasks and outputs the results to multiple directories", function(){
         var destDirs = this.files[0].dest;
