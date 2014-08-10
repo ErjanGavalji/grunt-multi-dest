@@ -1,88 +1,75 @@
-﻿module.exports = function (grunt) {
+/*
+ * grunt-multi-dest
+ * https://github.com/ErjanGavalji/grunt-multi-dest
+ *
+ * Copyright (c) 2014 Erjan Gavalji
+ * Licensed under the MIT license.
+ */
 
-   var distDirs = ["./dist/dist1/", "./dist/dist2/"];
+'use strict';
 
-    grunt.initConfig({
-        pkg: grunt.file.readJSON('package.json'),
-        srcDir: "./src",
-        distDirBase: "./dist",
-        distDirs: [" <%= distDirBase %>/dist1", "<%= distDirBase %>/dist2"],
-        clean: {
-            distDir: {
-                src: distDirs
-            }
-        },
-        watch: {
-            sourceFiles: {
-                files: ["<%= srcDir %>/**"],
-                tasks: ["multiOutput:initialTasks"],
-                options: {
-                    spawn: false
-                }
-            }
-        },
-        copy: {
-            zeFiles:{
-                expand: true,
-                src: ["**"],
-                cwd: "<%= srcDir %>/",
-                dest: "<%= distDirBase %>" //distDirs
-            }
-        },
-        multiOutput: {
-            initialTasks: {
-                tasks: [
-                    "clean:distDir",
-                    "copy:zeFiles"
-                ],
-                dest: ["<%= distDirBase %>/dist1A", "<%= distDirBase %>/dist2B"]
-            },
-            otherTasks: {
-                tasks : [
-                    "clean:distDir"
-                ],
-                dest: ["./aa/bb", "./cc/dd"]
-            }
-        }
-    });
+module.exports = function(grunt) {
 
-    grunt.loadNpmTasks("grunt-contrib-clean");
-    grunt.loadNpmTasks("grunt-contrib-copy");
-    grunt.loadNpmTasks("grunt-contrib-watch");
+  // Project configuration.
+  grunt.initConfig({
+    jshint: {
+      all: [
+        'Gruntfile.js',
+        'tasks/*.js',
+        '<%= nodeunit.tests %>'
+      ],
+      options: {
+        jshintrc: '.jshintrc'
+      }
+    },
 
-    grunt.registerMultiTask("multiOutput", "Runs the specified tasks and outputs the results to multiple directories", function(){
-        var destDirs = this.files[0].dest;
-        var subTasks = this.data.tasks;
+    // Before generating any new files, remove any previously-created files.
+    clean: {
+      tests: ['./test/tmp/']
+    },
 
-        var newTaskList = [];
-        var newTaskName = "multiOutput_Child";
-
-        for (var i=0; i<destDirs.length; i++)
+    copy: {
+        testFiles:
         {
-            var destDir = destDirs[i];
-            for (var k=0; k<subTasks.length; k++)
-            {
-                var subTask = subTasks[k];
-
-                var subTaskSplit = subTask.split(":");
-                var originalSubTaskConfig = grunt.config(subTaskSplit);
-
-                subTaskSplit[1] = subTaskSplit[1] + "_" + i + "_" + k;
-
-                var newTaskConfig = grunt.util._.clone(originalSubTaskConfig);
-                newTaskConfig.dest = destDir;
-                grunt.config(subTaskSplit, newTaskConfig);
-
-                newTaskList.push(subTaskSplit.join(":"));
-            }
+            src: [
+                './test/fixtures/input1.txt',
+                './test/fixtures/input2.txt'
+            ],
+            dest: './test/tmp/normaldestination/'
         }
+    },
 
-        grunt.registerTask(newTaskName, newTaskList);
-        grunt.task.run(newTaskName);
-    });
+    // Configuration to be run (and then tested).
+    multidest: {
+        copyOperation: {
+            tasks: [
+                'copy:testFiles'
+            ],
+            dest: ['./test/tmp/multidest_1/', './test/tmp/multidest_2/']
+        }
+    },
 
-    grunt.registerTask("default", [
-        "multiOutput:initialTasks"
-    ]);
+    // Unit tests.
+    nodeunit: {
+      tests: ['test/*_test.js']
+    }
+
+  });
+
+  // Actually load this plugin's task(s).
+  grunt.loadTasks('tasks');
+
+  // These plugins provide necessary tasks.
+  grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-contrib-nodeunit');
+
+  // Whenever the "test" task is run, first clean the "tmp" dir, then run this
+  // plugin's task(s), then test the result.
+  grunt.registerTask('test', ['clean', 'multidest', 'nodeunit']);
+
+  // By default, lint and run all tests.
+  grunt.registerTask('default', ['jshint', 'test']);
 
 };
