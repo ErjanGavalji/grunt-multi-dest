@@ -16,8 +16,10 @@ module.exports = function(grunt) {
       all: [
         'Gruntfile.js',
         'tasks/*.js',
-        '<%= nodeunit.tests %>'
-      ],
+        '<%= nodeunit.singlesubtasktests %>',
+        '<%= nodeunit.multitargettests %>',
+        '<%= nodeunit.multifilestests %>'
+        ],
       options: {
         jshintrc: '.jshintrc'
       }
@@ -29,13 +31,25 @@ module.exports = function(grunt) {
     },
 
     copy: {
-        testFiles:
-        {
+        testFiles: {
             src: [
                 './test/fixtures/input1.txt',
                 './test/fixtures/input2.txt'
             ],
             dest: './test/tmp/normaldestination/'
+        },
+        otherTestFiles: {
+            expand: true,
+            cwd: './test/fixtures/',
+            src: [
+                './input3.txt',
+                './input4.txt'
+            ]
+        },
+        multiTestFiles: {
+            expand: true,
+            cwd: './test/fixtures/multifiles/',
+            src: ['./**']
         }
     },
 
@@ -46,12 +60,26 @@ module.exports = function(grunt) {
                 'copy:testFiles'
             ],
             dest: ['./test/tmp/multidest_1/', './test/tmp/multidest_2/']
+        },
+        multifiles: {
+            files: [
+            //TODO: Add an entry to the readme, that when expand used, src MUST be provided, even empty!
+                {src: [], expand: true, cwd: './tmp', dest: ['./test/tmp/multidest_3/', './test/tmp/multidest_4/']},
+                {dest: ['./test/tmp/multidest_5/', './test/tmp/multidest_6/']}
+            ],
+            tasks: [
+                'copy:testFiles',
+                'copy:otherTestFiles',
+                'copy:multiTestFiles'
+            ]
         }
     },
 
     // Unit tests.
     nodeunit: {
-      tests: ['test/*_test.js']
+      singlesubtasktests: ['test/singlesubtasktests.js'],
+      multitargettests:['test/multitargettests.js'],
+      multifilestests:['test/multifilestests.js']
     }
 
   });
@@ -67,7 +95,16 @@ module.exports = function(grunt) {
 
   // Whenever the "test" task is run, first clean the "tmp" dir, then run this
   // plugin's task(s), then test the result.
-  grunt.registerTask('test', ['clean', 'multidest', 'nodeunit']);
+  grunt.registerTask('test', [
+    'clean',
+    'multidest:copyOperation',
+    'nodeunit:singlesubtasktests',
+    'clean',
+    'multidest',
+    'nodeunit:multitargettests',
+    'clean',
+    'multidest:multifiles',
+    'nodeunit:multifilestests']);
 
   // By default, lint and run all tests.
   grunt.registerTask('default', ['jshint', 'test']);
