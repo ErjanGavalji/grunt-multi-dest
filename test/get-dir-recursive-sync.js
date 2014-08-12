@@ -8,10 +8,11 @@ var getDirRecursiveSync = function(dir, filelist) {
     for (var i=0; i<fileLength; i++)
     {
         var file = files[i];
-        if (fs.statSync(dir + file).isDirectory()) {
-            filelist = getDirRecursiveSync(dir + file + '/', filelist);
+        var path = dir + file;
+        if (fs.statSync(path).isDirectory()) {
+            filelist = getDirRecursiveSync(path + '/', filelist);
         } else {
-            filelist.push(file);
+            filelist.push(path);
         }
     }
     return filelist;

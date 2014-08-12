@@ -16,12 +16,12 @@ module.exports = function(grunt) {
       all: [
         'Gruntfile.js',
         'tasks/*.js',
-        '<%= nodeunit.singlesubtasktests %>',
-        '<%= nodeunit.multitargettests %>',
-        '<%= nodeunit.multifilestests %>'
+        '<%= simplemocha.singlesubtasktests.src %>',
+        '<%= simplemocha.multitargettests.src %>',
+        '<%= simplemocha.multifilestests.src %>'
         ],
       options: {
-        jshintrc: '.jshintrc'
+        jshintrc: '.jshintrc',
       }
     },
 
@@ -63,8 +63,8 @@ module.exports = function(grunt) {
         },
         multifiles: {
             files: [
-            //TODO: Add an entry to the readme, that when expand used, src MUST be provided, even empty!
-                {src: [], expand: true, cwd: './tmp', dest: ['./test/tmp/multidest_3/', './test/tmp/multidest_4/']},
+            //TODO: Add an entry to the readme, that expand does not work!
+                {dest: ['./test/tmp/multidest_3/', './test/tmp/multidest_4/']},
                 {dest: ['./test/tmp/multidest_5/', './test/tmp/multidest_6/']}
             ],
             tasks: [
@@ -76,10 +76,31 @@ module.exports = function(grunt) {
     },
 
     // Unit tests.
-    nodeunit: {
-      singlesubtasktests: ['test/singlesubtasktests.js'],
-      multitargettests:['test/multitargettests.js'],
-      multifilestests:['test/multifilestests.js']
+    simplemocha: {
+        options: {
+            globals: ['should'],
+            timeout: 3000,
+            ignoreLeaks: false,
+//            grep: '*',
+            ui: 'bdd',
+            reporter: 'spec'
+        },
+        singlesubtasktests: { src: ['./test/singlesubtasktests.js'] },
+        multitargettests: { src: ['./test/multitargettests.js'] },
+        multifilestests: { src: ['./test/multifilestests.js'] }
+    },
+    
+    watch: {
+        default:
+        {
+            tasks: [
+                "default"
+            ],
+            files: ["./test/fixtures/**"],
+            options: {
+                spawn: false
+            }
+        }
     }
 
   });
@@ -91,20 +112,21 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-copy');
-  grunt.loadNpmTasks('grunt-contrib-nodeunit');
+  grunt.loadNpmTasks('grunt-simple-mocha');
+  grunt.loadNpmTasks('grunt-contrib-watch');
 
   // Whenever the "test" task is run, first clean the "tmp" dir, then run this
   // plugin's task(s), then test the result.
   grunt.registerTask('test', [
     'clean',
     'multidest:copyOperation',
-    'nodeunit:singlesubtasktests',
+    'simplemocha:singlesubtasktests',
     'clean',
     'multidest',
-    'nodeunit:multitargettests',
+    'simplemocha:multitargettests',
     'clean',
     'multidest:multifiles',
-    'nodeunit:multifilestests']);
+    'simplemocha:multifilestests']);
 
   // By default, lint and run all tests.
   grunt.registerTask('default', ['jshint', 'test']);

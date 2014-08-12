@@ -9,7 +9,6 @@
 'use strict';
 
 module.exports = function(grunt) {
-
     var multiDest = function() {
         // Merge task-specific and/or target-specific options with these defaults.
         var options = this.options({
@@ -17,9 +16,17 @@ module.exports = function(grunt) {
           separator: ', '
         });
 
-        var destDirs = this.files[0].dest;
+        var destDirs = [];
+        var thisFiles = this.files;
+grunt.log.writeln("THIS.FILES %o", this.files.length);
+        for(var fileIdx=0; fileIdx<thisFiles.length; fileIdx++)
+        {
+            destDirs = destDirs.concat(thisFiles[fileIdx].dest);
+        }
+grunt.log.writeln("DESTDIRS: %o", destDirs);
+//grunt.fail();
         var subTasks = this.data.tasks;
-grunt.log.write("%o ", this.data);
+
         var newTaskList = [];
         var newTaskName = "multidist_runtimecreated_subtask";
 
@@ -33,7 +40,7 @@ grunt.log.write("%o ", this.data);
                 var subTaskSplit = subTask.split(":");
                 var originalSubTaskConfig = grunt.config(subTaskSplit);
 
-                subTaskSplit[1] = subTaskSplit[1] + "_" + i + "_" + k;
+                subTaskSplit[1] = this.target + "_" + subTaskSplit[1] + "_" + i + "_" + k;
 
                 var newTaskConfig = grunt.util._.clone(originalSubTaskConfig);
                 newTaskConfig.dest = destDir;
@@ -42,7 +49,8 @@ grunt.log.write("%o ", this.data);
                 newTaskList.push(subTaskSplit.join(":"));
             }
         }
-
+grunt.log.writeln("%o", newTaskList);
+//grunt.fail();
         grunt.registerTask(newTaskName, newTaskList);
         grunt.task.run(newTaskName);
 
