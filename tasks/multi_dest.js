@@ -18,13 +18,11 @@ module.exports = function(grunt) {
 
         var destDirs = [];
         var thisFiles = this.files;
-grunt.log.writeln("THIS.FILES %o", this.files.length);
         for(var fileIdx=0; fileIdx<thisFiles.length; fileIdx++)
         {
             destDirs = destDirs.concat(thisFiles[fileIdx].dest);
         }
-grunt.log.writeln("DESTDIRS: %o", destDirs);
-//grunt.fail();
+
         var subTasks = this.data.tasks;
 
         var newTaskList = [];
@@ -49,8 +47,7 @@ grunt.log.writeln("DESTDIRS: %o", destDirs);
                 newTaskList.push(subTaskSplit.join(":"));
             }
         }
-grunt.log.writeln("%o", newTaskList);
-//grunt.fail();
+
         grunt.registerTask(newTaskName, newTaskList);
         grunt.task.run(newTaskName);
 
