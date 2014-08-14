@@ -1,2 +1,4 @@
 *.tgz
 .travis.yml
+
+test/tmp
