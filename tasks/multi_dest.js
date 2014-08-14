@@ -10,11 +10,6 @@
 
 module.exports = function(grunt) {
     var multiDest = function() {
-        // Merge task-specific and/or target-specific options with these defaults.
-        var options = this.options({
-          punctuation: '.',
-          separator: ', '
-        });
 
         var destDirs = [];
         var thisFiles = this.files;
@@ -38,7 +33,7 @@ module.exports = function(grunt) {
                 var subTaskSplit = subTask.split(":");
                 var originalSubTaskConfig = grunt.config(subTaskSplit);
 
-                subTaskSplit[1] = this.target + "_" + subTaskSplit[1] + "_" + i + "_" + k;
+                subTaskSplit[1] = this.target + "_" + subTaskSplit[0] + "_" + subTaskSplit[1] + "_subtask_" + k + "_destdir_" + i;
 
                 var newTaskConfig = grunt.util._.clone(originalSubTaskConfig);
                 newTaskConfig.dest = destDir;
