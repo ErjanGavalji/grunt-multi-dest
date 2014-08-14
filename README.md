@@ -2,6 +2,8 @@
 
 > Run predefined tasks multiple times to copy their output to multiple destinations and avoid duplication
 
+[![Build Status](https://travis-ci.org/ErjanGavalji/grunt-multi-dest.svg?branch=master)](https://travis-ci.org/ErjanGavalji)
+
 ## Getting Started
 This plugin requires Grunt `~0.4.5`
 
