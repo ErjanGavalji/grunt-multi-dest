@@ -63,3 +63,5 @@ grunt.initConfig({
 });
 ```
 
+### Important note
+**As the multidest task does not operate on its own src files, it does not respect the expand option of its files attribute. That only applies to the expand option of the multidest task. The expand attribute of the tasks multidest runs works normally.**

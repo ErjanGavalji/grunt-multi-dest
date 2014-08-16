@@ -10,7 +10,6 @@
 
 module.exports = function(grunt) {
 
-  // Project configuration.
   grunt.initConfig({
     jshint: {
       all: [
@@ -25,7 +24,6 @@ module.exports = function(grunt) {
       }
     },
 
-    // Before generating any new files, remove any previously-created files.
     clean: {
       tests: ['./test/tmp/']
     },
@@ -50,10 +48,16 @@ module.exports = function(grunt) {
             expand: true,
             cwd: './test/fixtures/multifiles/',
             src: ['./**']
+        },
+        interimfiles: {
+            src: [
+                './test/fixtures/input1.txt',
+                './test/fistures/input2.txt'
+            ],
+            dest: './tmp/interim/'
         }
     },
 
-    // Configuration to be run (and then tested).
     multidest: {
         copyOperation: {
             tasks: [
@@ -63,7 +67,6 @@ module.exports = function(grunt) {
         },
         multifiles: {
             files: [
-            //TODO: Add an entry to the readme, that expand does not work!
                 {dest: ['./test/tmp/multidest_3/', './test/tmp/multidest_4/']},
                 {dest: ['./test/tmp/multidest_5/', './test/tmp/multidest_6/']}
             ],
@@ -81,7 +84,6 @@ module.exports = function(grunt) {
             globals: ['should'],
             timeout: 3000,
             ignoreLeaks: false,
-//            grep: '*',
             ui: 'bdd',
             reporter: 'spec'
         },
