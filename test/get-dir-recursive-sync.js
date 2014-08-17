@@ -1,3 +1,5 @@
+'use strict'
+
 var fs = fs || require('fs');
 
 var getDirRecursiveSync = function(dir, filelist) {
