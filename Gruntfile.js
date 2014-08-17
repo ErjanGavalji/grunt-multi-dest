@@ -98,7 +98,11 @@ module.exports = function(grunt) {
             tasks: [
                 "default"
             ],
-            files: ["./test/fixtures/**"],
+            files: [
+                "./test/fixtures/**",
+                "./test/*.js",
+                "./tasks/*.js"
+            ],
             options: {
                 spawn: false
             }

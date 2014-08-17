@@ -8,16 +8,28 @@
 
 'use strict';
 
+var DestinationMerger = function(){
+};
+
+DestinationMerger.prototype = {
+    mergeDests: function(taskFileDefs)
+    {
+        var allDests = [];
+        for(var fileIdx=0; fileIdx<taskFileDefs.length; fileIdx++)
+        {
+            var fileDef = taskFileDefs[fileIdx];
+            allDests = allDests.concat(fileDef.dest);
+        }
+        return allDests;
+    }
+};
+
 module.exports = function(grunt) {
     var multiDest = function() {
 
-        var destDirs = [];
-        var thisFiles = this.files;
-        for(var fileIdx=0; fileIdx<thisFiles.length; fileIdx++)
-        {
-            destDirs = destDirs.concat(thisFiles[fileIdx].dest);
-        }
+        var merger = new DestinationMerger();
 
+        var destDirs = merger.mergeDests(this.files);
         var subTasks = this.data.tasks;
 
         var newTaskList = [];
@@ -50,3 +62,4 @@ module.exports = function(grunt) {
 
     grunt.registerMultiTask('multidest', 'Run predefined tasks multiple times to copy their output to multiple destinations and avoid duplication', multiDest);
 };
+
